@@ -1,4 +1,6 @@
-﻿using Il2CppAssets.Scripts.Database;
+﻿using System.Xml.Linq;
+using Il2CppAssets.Scripts.Database;
+using Il2CppAssets.Scripts.PeroTools.Nice.Interface;
 
 namespace MDRPC.Models;
 
@@ -19,15 +21,30 @@ internal class CharacterModel
             .Cast<DBConfigCharacter>()
             .GetLocal()
             .GetInfoByIndex(DataHelper.selectedRoleIndex);
-
-        if (entity != null)
+        var roleSkinSettings = DataHelper.roleSkinSettings;
+        if (entity == null)
+            return Constants.Discord.UnknownCharacter;
+        string skin = "";
+        IData selectedChar = null;
+        for (int i = 0; i < roleSkinSettings.Count; i++)
         {
-			if (CosCharacters.Contains(entity.characterName, StringComparer.OrdinalIgnoreCase))
-				return $"{entity.cosName} {entity.characterName}";
+            if (VariableUtils.GetResult<int>(DataHelper.roleSkinSettings[i].fields["index"]) == DataHelper.selectedRoleIndex)
+            {
+                selectedChar = roleSkinSettings[i];
+                break;
+            }
+        }
+        if (selectedChar != null && entity.cosName != "Sailor Suit")
+        {
+            int skinIndex = VariableUtils.GetResult<int>(selectedChar.fields["skinIndex"]);
+            if (skinIndex == 1)
+                skin = "(Nya form)";
+            if (skinIndex == 2)
+                skin = "(Muse Warrior)";
+        }
 
-			return entity.characterName;
-		}
-
-        return Constants.Discord.UnknownCharacter;
-	}
+        if (CosCharacters.Contains(entity.characterName, StringComparer.OrdinalIgnoreCase))
+            return $"{entity.cosName} {entity.characterName} {skin}".Trim();
+        return $"{entity.characterName} {skin}".Trim();
+    }
 }
