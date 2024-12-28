@@ -1,4 +1,5 @@
-﻿using Il2CppAssets.Scripts.Database;
+﻿using System.Text;
+using Il2CppAssets.Scripts.Database;
 
 namespace MDRPC.Models;
 
@@ -53,10 +54,10 @@ internal class ActivityModel
 
     public string GetLargeImage()
     {
-        if (!isPlaying)
+        if (!isPlaying || "music_package_999" == musicInfo.albumUidName)
             return Constants.Discord.DefaultImage;
         return $"https://raw.githubusercontent.com/simon300000/musedash.moe/master/covers-raw/{musicInfo.cover}.png";
-	}
+    }
 
     public string GetLargeImageText()
     {
@@ -67,7 +68,7 @@ internal class ActivityModel
             return $"{playerName} (Lv. {playerLevel}) • {playerCharacter} feat. {playerElfin}";
 
         return $"{playerName} (Lv. {playerLevel}) • {playerCharacter}";
-	}
+    }
 
     public string GetSmallImage()
     {
